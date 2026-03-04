@@ -327,12 +327,55 @@ class LectureApi {
 }
 
 class MarksApi {
-  static Future<Map<String, dynamic>> getMyMarks() => _Http.get('/marks/student');
+
+  static Future<Map<String, dynamic>> getMyMarks() =>
+      _Http.get('/marks/student');
+
+  // Teacher: subjects list
+  static Future<Map<String, dynamic>> getSubjects() =>
+      _Http.get('/subjects');
+
+  // Teacher: subject create
+  static Future<Map<String, dynamic>> createSubject({
+    required String name,
+    String icon       = '📚',
+    String color      = '#6C63FF',
+    int    totalMarks = 100,
+    int?   classId,
+  }) =>
+      _Http.post('/subjects/create', {
+        'name': name, 'icon': icon, 'color': color,
+        'totalMarks': totalMarks,
+        if (classId != null) 'classId': classId,
+      });
+
+  // Teacher: ek subject ke students + unke marks
+  static Future<Map<String, dynamic>> getStudentsWithMarks(int subjectId) =>
+      _Http.get('/marks/students', query: {'subjectId': subjectId.toString()});
+
+  // Teacher: ek student ka mark update
+  static Future<Map<String, dynamic>> updateMark({
+    required int    studentId,
+    required int    subjectId,
+    required int    marks,
+    String examType = 'Unit Test',
+    String? examDate,
+  }) =>
+      _Http.put('/marks/update', {
+        'studentId': studentId,
+        'subjectId': subjectId,
+        'marks':     marks,
+        'examType':  examType,
+        if (examDate != null) 'examDate': examDate,
+      });
 }
 
 class QuizApi {
   static Future<Map<String, dynamic>> getTeacherQuizzes() =>
       _Http.get('/api/quiz/teacher');
+
+  static Future<Map<String, dynamic>> notifyStudents(int quizId) =>
+      _Http.post('/api/quiz/$quizId/notify', {});
 
   static Future<Map<String, dynamic>> createQuiz({
     required String title,
@@ -387,4 +430,85 @@ class QuizApi {
         'answers': answers,
         'cheated': cheated,
       });
+}
+class HomeworkApi {
+  // ── Teacher ────────────────────────────────────────────────────────────────
+
+
+  static Future<Map<String, dynamic>> getTeacherHomeworks() =>
+      _Http.get('/homework/teacher');
+
+  // Homework create (with optional file attachments)
+  static Future<Map<String, dynamic>> createHomework({
+    required int    classId,
+    required String title,
+    required String description,
+    required String dueDate, // 'YYYY-MM-DD HH:mm:ss'
+    List<String>    filePaths = const [],
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'classId':     classId.toString(),
+        'title':       title,
+        'description': description,
+        'dueDate':     dueDate,
+        for (int i = 0; i < filePaths.length; i++)
+          'files': await MultipartFile.fromFile(
+            filePaths[i],
+            filename: filePaths[i].split('/').last,
+          ),
+      });
+      final res = await _dio().post(
+        '/homework/create',
+        data:    formData,
+        options: await _dioOpts(),
+        onSendProgress: onProgress,
+      );
+      return res.data as Map<String, dynamic>;
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  // Ek homework ke submissions (submitted + pending)
+  static Future<Map<String, dynamic>> getSubmissions(int homeworkId) =>
+      _Http.get('/homework/$homeworkId/submissions');
+
+  // Homework delete
+  static Future<Map<String, dynamic>> deleteHomework(int homeworkId) =>
+      _Http.delete('/homework/$homeworkId');
+
+  // ── Student ────────────────────────────────────────────────────────────────
+
+  static Future<Map<String, dynamic>> getStudentHomeworks() =>
+      _Http.get('/homework/student');
+
+  // Student homework submit (with optional file)
+  static Future<Map<String, dynamic>> submitHomework({
+    required int    homeworkId,
+    required String note,
+    String?  filePath,
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'note': note,
+        if (filePath != null)
+          'file': await MultipartFile.fromFile(
+            filePath,
+            filename: filePath.split('/').last,
+          ),
+      });
+      final res = await _dio().post(
+        '/homework/$homeworkId/submit',
+        data:    formData,
+        options: await _dioOpts(),
+        onSendProgress: onProgress,
+      );
+      return res.data as Map<String, dynamic>;
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
 }

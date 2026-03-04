@@ -9,6 +9,7 @@ import 'teacher_live_lecture_screen.dart';
 import 'teacher_quiz_screen.dart';
 import 'teacher_marks_screen.dart';
 import 'teacher_homework_screen.dart';
+import 'teacher_manage_classes_screen.dart';
 
 class TeacherDashboardScreen extends StatefulWidget {
   const TeacherDashboardScreen({super.key});
@@ -76,12 +77,6 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
                           color: Colors.white,
                           letterSpacing: 0.2,
                         ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.settings_outlined,
-                            color: Colors.white.withOpacity(0.7), size: 24),
                       ),
                     ],
                   ),
@@ -155,20 +150,38 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            _DrawerItem(label: 'Profile', icon: Icons.person_outline),
             _DrawerItem(label: 'Settings', icon: Icons.settings_outlined),
             const Divider(color: Colors.white12, indent: 16, endIndent: 16),
             const Padding(
               padding: EdgeInsets.only(left: 16, top: 4, bottom: 4),
-              child: Text('Account',
-                  style: TextStyle(color: Colors.white38, fontSize: 12)),
+              child: Text(
+                'Administration',
+                style: TextStyle(color: Colors.white38, fontSize: 12),
+              ),
             ),
+            _DrawerItem(
+              label: 'Manage Classes',
+              icon: Icons.admin_panel_settings_rounded,
+              iconColor: const Color(0xFF00E5FF),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const TeacherManageClassesScreen(),
+                  ),
+                );
+              },
+            ),
+            const Spacer(),
+            const Divider(color: Colors.white12, indent: 16, endIndent: 16),
             _DrawerItem(
               label: 'Logout',
               icon: Icons.logout_rounded,
               iconColor: accent,
               onTap: () => context.go(AppRoutes.role),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -271,8 +284,7 @@ class _WelcomeCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   'Next Class: Tomorrow @ 10 AM',
-                  style:
-                  TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.55)),
+                  style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.55)),
                 ),
               ],
             ),
@@ -284,11 +296,9 @@ class _WelcomeCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF1A2E48),
               shape: BoxShape.circle,
-              border:
-              Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+              border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
             ),
-            child: const Icon(Icons.person_rounded,
-                color: Colors.blueAccent, size: 34),
+            child: const Icon(Icons.person_rounded, color: Colors.blueAccent, size: 34),
           ),
         ],
       ),
@@ -334,35 +344,28 @@ class _QuickActionsGrid extends StatelessWidget {
         label: 'Quiz',
         icon: Icons.quiz_rounded,
         color: const Color(0xFFC62828),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const TeacherQuizScreen(),
-            ),
-          );
-        },
-
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TeacherQuizScreen()),
+        ),
       ),
       _ActionItem(
         label: 'Marks',
         icon: Icons.bar_chart_rounded,
         color: const Color(0xFF2E7D32),
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (_) => const TeacherMarksScreen(),
-          ));
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TeacherMarksScreen()),
+        ),
       ),
       _ActionItem(
         label: 'Homework',
         icon: Icons.assignment_rounded,
         color: const Color(0xFF006064),
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (_) => const TeacherHomeworkScreen(),
-          ));
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TeacherHomeworkScreen()),
+        ),
       ),
     ];
 
@@ -384,11 +387,9 @@ class _QuickActionsGrid extends StatelessWidget {
             decoration: BoxDecoration(
               color: a.color,
               borderRadius: BorderRadius.circular(16),
-              border:
-              Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+              border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
             ),
-            padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
                 Icon(a.icon, color: Colors.white, size: 22),
@@ -437,13 +438,10 @@ class _PendingCard extends StatelessWidget {
         children: [
           Text(title,
               style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14)),
+                  color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
           const SizedBox(height: 5),
           Text(subtitle,
-              style: TextStyle(
-                  color: Colors.white.withOpacity(0.55), fontSize: 13)),
+              style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13)),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),

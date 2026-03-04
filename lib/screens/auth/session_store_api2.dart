@@ -453,3 +453,92 @@ class QuizApi {
         'cheated': cheated,
       });
 }
+// ═══════════════════════════════════════════════════════════════════════════════
+// HOMEWORK API
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class HomeworkApi {
+  // ── Teacher ───���──────────────────────────────────────────────────────────────
+
+  static Future<Map<String, dynamic>> getTeacherHomeworks() =>
+      _Http.get('/homework/teacher');
+
+  static Future<Map<String, dynamic>> createHomework({
+    required int    classId,
+    required String title,
+    required String description,
+    required String dueDate,
+    List<String>    filePaths = const [],
+  }) async {
+    try {
+      final token = await SessionStore.token; // ✅ .token getter
+      final uri   = Uri.parse('$kBaseUrl/homework/create'); // ✅ kBaseUrl
+      final req   = http.MultipartRequest('POST', uri);
+      if (token != null) {
+        req.headers['Authorization'] = 'Bearer $token';
+      }
+      req.fields['classId']     = classId.toString();
+      req.fields['title']       = title;
+      req.fields['description'] = description;
+      req.fields['dueDate']     = dueDate;
+      for (final path in filePaths) {
+        req.files.add(
+          await http.MultipartFile.fromPath(
+            'files', path,
+            filename: path.split('/').last,
+          ),
+        );
+      }
+      final streamed = await req.send();
+      final res      = await http.Response.fromStream(streamed);
+      return jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  static Future<Map<String, dynamic>> getSubmissions(
+      int homeworkId) =>
+      _Http.get('/homework/$homeworkId/submissions');
+
+  static Future<Map<String, dynamic>> deleteHomework(
+      int homeworkId) =>
+      _Http.delete('/homework/$homeworkId');
+
+  // ── Student ──────────────────────────────────────────────────────────────────
+
+  static Future<Map<String, dynamic>> getStudentHomeworks() =>
+      _Http.get('/homework/student');
+
+  static Future<Map<String, dynamic>> submitHomework({
+    required int    homeworkId,
+    required String note,
+    String?         filePath,
+  }) async {
+    try {
+      final token = await SessionStore.token; // ✅ .token getter
+      final uri   = Uri.parse(
+          '$kBaseUrl/homework/$homeworkId/submit'); // ✅ kBaseUrl
+      final req   = http.MultipartRequest('POST', uri);
+      if (token != null) {
+        req.headers['Authorization'] = 'Bearer $token';
+      }
+      req.fields['note'] = note;
+      if (filePath != null &&
+          filePath.isNotEmpty &&
+          !filePath.startsWith('/mock')) {
+        req.files.add(
+          await http.MultipartFile.fromPath(
+            'file', filePath,
+            filename: filePath.split('/').last,
+          ),
+        );
+      }
+      final streamed = await req.send();
+      final res      = await http.Response.fromStream(streamed);
+      return jsonDecode(res.body) as Map<String, dynamic>;
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+}

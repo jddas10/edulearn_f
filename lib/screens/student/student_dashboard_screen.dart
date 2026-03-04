@@ -55,7 +55,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           SafeArea(
             child: Column(
               children: [
-                // AppBar
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 18, 8, 4),
                   child: Row(
@@ -63,8 +62,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                       Builder(
                         builder: (ctx) => IconButton(
                           onPressed: () => Scaffold.of(ctx).openDrawer(),
-                          icon: const Icon(Icons.menu,
-                              color: Colors.white, size: 26),
+                          icon: const Icon(Icons.menu, color: Colors.white, size: 26),
                         ),
                       ),
                       const Icon(Icons.school_rounded, color: accent, size: 22),
@@ -78,27 +76,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                           letterSpacing: 0.2,
                         ),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.settings_outlined,
-                            color: Colors.white.withOpacity(0.7), size: 24),
-                      ),
                     ],
                   ),
                 ),
-
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(16, 26, 16, 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Welcome card
                         _WelcomeCard(accent: accent),
                         const SizedBox(height: 24),
-
-                        // Quick Actions
                         const Center(
                           child: Text(
                             'Quick Actions',
@@ -112,8 +100,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                         const SizedBox(height: 14),
                         _QuickActionsGrid(accent: accent),
                         const SizedBox(height: 24),
-
-                        // Recent Activity
                         const Center(
                           child: Text(
                             'Recent Activity',
@@ -159,20 +145,16 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            _DrawerItem(label: 'Profile', icon: Icons.person_outline),
             _DrawerItem(label: 'Settings', icon: Icons.settings_outlined),
+            const Spacer(),
             const Divider(color: Colors.white12, indent: 16, endIndent: 16),
-            const Padding(
-              padding: EdgeInsets.only(left: 16, top: 4, bottom: 4),
-              child: Text('Account',
-                  style: TextStyle(color: Colors.white38, fontSize: 12)),
-            ),
             _DrawerItem(
               label: 'Logout',
               icon: Icons.logout_rounded,
               iconColor: accent,
               onTap: () => context.go(AppRoutes.role),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -180,7 +162,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
   }
 }
 
-// ── Welcome Card ──
 class _WelcomeCard extends StatelessWidget {
   final Color accent;
   const _WelcomeCard({required this.accent});
@@ -214,16 +195,12 @@ class _WelcomeCard extends StatelessWidget {
                 Text(
                   'Courses Completed: 75%',
                   style: TextStyle(
-                      fontSize: 13,
-                      color: accent,
-                      fontWeight: FontWeight.w500),
+                      fontSize: 13, color: accent, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Next Live: Tomorrow @ 10 AM',
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white.withOpacity(0.55)),
+                  style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.55)),
                 ),
               ],
             ),
@@ -235,11 +212,9 @@ class _WelcomeCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF1A2E48),
               shape: BoxShape.circle,
-              border: Border.all(
-                  color: Colors.white.withOpacity(0.08), width: 1),
+              border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
             ),
-            child: const Icon(Icons.person_rounded,
-                color: Colors.blueAccent, size: 34),
+            child: const Icon(Icons.person_rounded, color: Colors.blueAccent, size: 34),
           ),
         ],
       ),
@@ -247,7 +222,6 @@ class _WelcomeCard extends StatelessWidget {
   }
 }
 
-// ── Quick Actions Grid ──
 class _QuickActionsGrid extends StatelessWidget {
   final Color accent;
   const _QuickActionsGrid({required this.accent});
@@ -261,30 +235,26 @@ class _QuickActionsGrid extends StatelessWidget {
         color: const Color(0xFF5B2D8E),
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const StudentAttendanceScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => const StudentAttendanceScreen()),
         ),
       ),
       _ActionItem(
         label: 'Recorded',
         icon: Icons.video_library_rounded,
         color: const Color(0xFFB84A00),
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (_) => const StudentRecordedScreen(),
-          ));
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const StudentRecordedScreen()),
+        ),
       ),
       _ActionItem(
         label: 'Live Classes',
         icon: Icons.videocam_rounded,
         color: const Color(0xFF1565C0),
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (_) => const StudentLiveLectureScreen(),
-          ));
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const StudentLiveLectureScreen()),
+        ),
       ),
       _ActionItem(
         label: 'Quiz',
@@ -292,21 +262,17 @@ class _QuickActionsGrid extends StatelessWidget {
         color: const Color(0xFFC62828),
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const StudentQuizScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => const StudentQuizScreen()),
         ),
       ),
       _ActionItem(
         label: 'Marks',
         icon: Icons.bar_chart_rounded,
         color: const Color(0xFF2E7D32),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const StudentMarksScreen()),
-          );
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const StudentMarksScreen()),
+        ),
       ),
       _ActionItem(
         label: 'Homework',
@@ -314,9 +280,7 @@ class _QuickActionsGrid extends StatelessWidget {
         color: const Color(0xFF006064),
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const StudentHomeworkScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => const StudentHomeworkScreen()),
         ),
       ),
     ];
@@ -339,11 +303,9 @@ class _QuickActionsGrid extends StatelessWidget {
             decoration: BoxDecoration(
               color: a.color,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                  color: Colors.white.withOpacity(0.08), width: 1),
+              border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
             ),
-            padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
                 Icon(a.icon, color: Colors.white, size: 22),
@@ -365,7 +327,6 @@ class _QuickActionsGrid extends StatelessWidget {
   }
 }
 
-// ── Activity Card ──
 class _ActivityCard extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -393,13 +354,10 @@ class _ActivityCard extends StatelessWidget {
         children: [
           Text(title,
               style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14)),
+                  color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
           const SizedBox(height: 5),
           Text(subtitle,
-              style: TextStyle(
-                  color: Colors.white.withOpacity(0.55), fontSize: 13)),
+              style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13)),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
@@ -416,7 +374,6 @@ class _ActivityCard extends StatelessWidget {
   }
 }
 
-// ── Drawer Item ──
 class _DrawerItem extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -443,13 +400,11 @@ class _DrawerItem extends StatelessWidget {
   }
 }
 
-// ── Action Item Model ──
 class _ActionItem {
   final String label;
   final IconData icon;
   final Color color;
   final VoidCallback? onTap;
-
   const _ActionItem({
     required this.label,
     required this.icon,
@@ -458,13 +413,11 @@ class _ActionItem {
   });
 }
 
-// ── Background Painter ──
 class _DarkBgPainter extends CustomPainter {
   final double progress;
   _DarkBgPainter({required this.progress});
 
-  void _drawOrb(Canvas canvas, Offset center, double radius, Color color,
-      double opacity) {
+  void _drawOrb(Canvas canvas, Offset center, double radius, Color color, double opacity) {
     final paint = Paint()
       ..shader = RadialGradient(
         colors: [
@@ -481,14 +434,11 @@ class _DarkBgPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final ease = Curves.easeInOut.transform(progress);
 
-    _drawOrb(canvas,
-        Offset(size.width * 0.88, size.height * 0.06 - ease * 8),
+    _drawOrb(canvas, Offset(size.width * 0.88, size.height * 0.06 - ease * 8),
         size.width * 0.65, const Color(0xFF003A45), 0.50);
-    _drawOrb(canvas,
-        Offset(-size.width * 0.1 + ease * 6, size.height * 0.45),
+    _drawOrb(canvas, Offset(-size.width * 0.1 + ease * 6, size.height * 0.45),
         size.width * 0.55, const Color(0xFF002830), 0.45);
-    _drawOrb(canvas,
-        Offset(size.width * 0.92, size.height * 0.88 + ease * 6),
+    _drawOrb(canvas, Offset(size.width * 0.92, size.height * 0.88 + ease * 6),
         size.width * 0.50, const Color(0xFF002030), 0.40);
 
     final wavePaint = Paint()
@@ -507,23 +457,15 @@ class _DarkBgPainter extends CustomPainter {
       for (int s = 0; s <= steps; s++) {
         final x = (size.width / steps) * s;
         final y = yBase +
-            waveAmplitude *
-                sin((x / size.width) * pi * waveFreq +
-                    i * 0.3 +
-                    ease * 0.4) +
+            waveAmplitude * sin((x / size.width) * pi * waveFreq + i * 0.3 + ease * 0.4) +
             (waveAmplitude * 0.4) *
                 sin((x / size.width) * pi * waveFreq * 2.1 + i * 0.15);
-        if (s == 0) {
-          path.moveTo(x, y);
-        } else {
-          path.lineTo(x, y);
-        }
+        s == 0 ? path.moveTo(x, y) : path.lineTo(x, y);
       }
       canvas.drawPath(path, wavePaint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _DarkBgPainter old) =>
-      old.progress != progress;
+  bool shouldRepaint(covariant _DarkBgPainter old) => old.progress != progress;
 }

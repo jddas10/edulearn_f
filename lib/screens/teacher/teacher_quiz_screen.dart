@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
-import '../auth/session_store_api2.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import '../auth/api_service.dart';
 
 class _BackgroundPainter extends CustomPainter {
   @override
@@ -156,7 +159,8 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                  width: 42, height: 42,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: Colors.white.withAlpha(18),
                     borderRadius: BorderRadius.circular(12),
@@ -190,7 +194,8 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
               ),
               const Spacer(),
               Container(
-                width: 42, height: 42,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                       colors: [Color(0xFF6C63FF), Color(0xFF00D4FF)]),
@@ -223,8 +228,8 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
         child: Row(
           children: [
-            _statChip('${_quizzes.length}', 'Total Quizzes',
-                const Color(0xFF6C63FF)),
+            _statChip(
+                '${_quizzes.length}', 'Total Quizzes', const Color(0xFF6C63FF)),
             const SizedBox(width: 10),
             _statChip('$active', 'Active', const Color(0xFF00D4AA)),
             const SizedBox(width: 10),
@@ -321,12 +326,11 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
         ),
         child: Column(
           children: [
-            // Top color bar
             Container(
               height: 4,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [color, color.withAlpha(77)]),
+                gradient:
+                LinearGradient(colors: [color, color.withAlpha(77)]),
                 borderRadius:
                 const BorderRadius.vertical(top: Radius.circular(20)),
               ),
@@ -339,7 +343,8 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                   Row(
                     children: [
                       Container(
-                        width: 46, height: 46,
+                        width: 46,
+                        height: 46,
                         decoration: BoxDecoration(
                           color: color.withAlpha(38),
                           borderRadius: BorderRadius.circular(14),
@@ -360,7 +365,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: -0.3)),
                             const SizedBox(height: 4),
-                            // ✅ Questions + Marks info
                             Row(
                               children: [
                                 Icon(Icons.help_outline,
@@ -386,7 +390,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                           ],
                         ),
                       ),
-                      // ✅ Active badge
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
@@ -413,7 +416,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                     ],
                   ),
                   const SizedBox(height: 14),
-                  // Progress
                   Row(
                     children: [
                       Expanded(
@@ -444,7 +446,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                 ],
               ),
             ),
-            // ✅ FIXED FOOTER — clean design
             Container(
               padding:
               const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
@@ -457,7 +458,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
               ),
               child: Row(
                 children: [
-                  // View Results button
                   _footerBtn(
                     icon: Icons.bar_chart_rounded,
                     label: 'Results',
@@ -469,8 +469,7 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                           PageRouteBuilder(
                               pageBuilder: (_, a, __) => FadeTransition(
                                   opacity: a,
-                                  child:
-                                  QuizResultsViewScreen(quiz: quiz)),
+                                  child: QuizResultsViewScreen(quiz: quiz)),
                               transitionDuration:
                               const Duration(milliseconds: 400)));
                     },
@@ -478,7 +477,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                   const SizedBox(width: 6),
                   _footerDivider(),
                   const SizedBox(width: 6),
-                  // Edit button
                   _footerBtn(
                     icon: Icons.edit_outlined,
                     label: 'Edit',
@@ -499,7 +497,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                   const SizedBox(width: 6),
                   _footerDivider(),
                   const SizedBox(width: 6),
-                  // Share button
                   _footerBtn(
                     icon: Icons.notifications_outlined,
                     label: 'Notify',
@@ -507,7 +504,6 @@ class _TeacherQuizScreenState extends State<TeacherQuizScreen>
                     onTap: () => _showQuizOptions(quiz),
                   ),
                   const Spacer(),
-                  // Delete button
                   GestureDetector(
                     onTap: () => _confirmDelete(index),
                     child: Container(
@@ -676,14 +672,16 @@ class _QuizOptionsSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                   color: Colors.white.withAlpha(51),
                   borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 20),
           Row(children: [
             Container(
-                width: 50, height: 50,
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
                     color: color.withAlpha(38),
                     borderRadius: BorderRadius.circular(14)),
@@ -700,41 +698,35 @@ class _QuizOptionsSheet extends StatelessWidget {
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w700)),
-                    Text('${quiz['questions']} Questions  •  ${quiz['totalMarks']} Marks',
+                    Text(
+                        '${quiz['questions']} Questions  •  ${quiz['totalMarks']} Marks',
                         style: TextStyle(color: color, fontSize: 13)),
                   ]),
             ),
           ]),
           const SizedBox(height: 24),
-          _sheetOption(
-              Icons.bar_chart_rounded,
-              'View Results',
-              'See student performance',
-              color, () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                PageRouteBuilder(
-                    pageBuilder: (_, a, __) => FadeTransition(
-                        opacity: a,
-                        child: QuizResultsViewScreen(quiz: quiz)),
-                    transitionDuration: const Duration(milliseconds: 400)));
-          }),
-          _sheetOption(
-              Icons.edit_outlined,
-              'Edit Quiz',
-              'Modify questions or settings',
-              const Color(0xFFFFB347), () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                PageRouteBuilder(
-                    pageBuilder: (_, a, __) => FadeTransition(
-                        opacity: a, child: QuizEditorScreen(quiz: quiz)),
-                    transitionDuration: const Duration(milliseconds: 400)))
-                .then((_) => onRefresh());
-          }),
-          // ✅ NOTIFY STUDENTS — FCM
+          _sheetOption(Icons.bar_chart_rounded, 'View Results',
+              'See student performance', color, () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                        pageBuilder: (_, a, __) => FadeTransition(
+                            opacity: a,
+                            child: QuizResultsViewScreen(quiz: quiz)),
+                        transitionDuration: const Duration(milliseconds: 400)));
+              }),
+          _sheetOption(Icons.edit_outlined, 'Edit Quiz',
+              'Modify questions or settings', const Color(0xFFFFB347), () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                        pageBuilder: (_, a, __) => FadeTransition(
+                            opacity: a, child: QuizEditorScreen(quiz: quiz)),
+                        transitionDuration: const Duration(milliseconds: 400)))
+                    .then((_) => onRefresh());
+              }),
           _sheetOption(
               Icons.notifications_active_outlined,
               'Notify Students',
@@ -756,33 +748,30 @@ class _QuizOptionsSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12))));
             }
           }),
-          _sheetOption(
-              Icons.copy_outlined,
-              'Duplicate Quiz',
-              'Create a copy',
+          _sheetOption(Icons.copy_outlined, 'Duplicate Quiz', 'Create a copy',
               Colors.white54, () async {
-            Navigator.pop(context);
-            HapticFeedback.mediumImpact();
-            final res = await QuizApi.duplicateQuiz(quiz['id'] as int);
-            if (res['success'] == true) {
-              onRefresh();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: const Text('Quiz duplicated! ✅'),
-                    backgroundColor: const Color(0xFF00D4AA),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12))));
-              }
-            } else if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(res['message'] ?? 'Duplicate failed'),
-                  backgroundColor: const Color(0xFFFF6584),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))));
-            }
-          }),
+                Navigator.pop(context);
+                HapticFeedback.mediumImpact();
+                final res = await QuizApi.duplicateQuiz(quiz['id'] as int);
+                if (res['success'] == true) {
+                  onRefresh();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: const Text('Quiz duplicated! ✅'),
+                        backgroundColor: const Color(0xFF00D4AA),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12))));
+                  }
+                } else if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(res['message'] ?? 'Duplicate failed'),
+                      backgroundColor: const Color(0xFFFF6584),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))));
+                }
+              }),
         ],
       ),
     );
@@ -838,6 +827,7 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
   late Animation<double> _entryAnim;
   List<Map<String, dynamic>> _results = [];
   bool _isLoading = true;
+  bool _isExporting = false;
 
   @override
   void initState() {
@@ -868,6 +858,83 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _exportXml() async {
+    if (_results.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('No results to export'),
+        backgroundColor: Color(0xFFFF6584),
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+    setState(() => _isExporting = true);
+    try {
+      final totalMarks = widget.quiz['totalMarks'] as int? ?? 0;
+      final title = widget.quiz['title'] ?? 'Quiz';
+      final date = DateTime.now();
+      final dateStr =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+      final buffer = StringBuffer();
+      buffer.writeln('<?xml version="1.0" encoding="UTF-8"?>');
+      buffer.writeln(
+          '<QuizResults title="${_escapeXml(title)}" totalMarks="$totalMarks" date="$dateStr" totalStudents="${_results.length}">');
+
+      for (final r in _results) {
+        final name = r['name'] ?? 'Student';
+        final username = r['username'] ?? '';
+        final score = r['score'] as int? ?? 0;
+        final cheated = r['cheated'] == 1 || r['cheated'] == true;
+        final pct = totalMarks > 0 ? (score / totalMarks * 100).toInt() : 0;
+
+        String grade;
+        if (pct >= 90) {
+          grade = 'A+';
+        } else if (pct >= 75) {
+          grade = 'A';
+        } else if (pct >= 60) {
+          grade = 'B';
+        } else {
+          grade = 'C';
+        }
+
+        buffer.writeln(
+            '  <Student name="${_escapeXml(name)}" enrollment="${_escapeXml(username)}" score="$score" totalMarks="$totalMarks" percentage="$pct%" grade="$grade" cheated="$cheated"/>');
+      }
+      buffer.writeln('</QuizResults>');
+
+      final dir = await getTemporaryDirectory();
+      final safeTitle = title.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
+      final file = File('${dir.path}/${safeTitle}_results_$dateStr.xml');
+      await file.writeAsString(buffer.toString());
+
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'text/xml')],
+        subject: '$title - Quiz Results',
+        text: 'Quiz results for "$title" — $dateStr',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Export failed: $e'),
+          backgroundColor: const Color(0xFFFF6584),
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
+  }
+
+  String _escapeXml(String input) {
+    return input
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&apos;');
   }
 
   @override
@@ -906,7 +973,8 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                        width: 42, height: 42,
+                        width: 42,
+                        height: 42,
                         decoration: BoxDecoration(
                             color: Colors.white.withAlpha(18),
                             borderRadius: BorderRadius.circular(12),
@@ -939,6 +1007,45 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis),
                         ]),
+                  ),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: _isExporting ? null : _exportXml,
+                    child: Container(
+                      height: 42,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                            colors: [Color(0xFF00D4AA), Color(0xFF00A878)]),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                              color:
+                              const Color(0xFF00D4AA).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3))
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _isExporting
+                              ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2))
+                              : const Icon(Icons.download_rounded,
+                              color: Colors.white, size: 18),
+                          const SizedBox(width: 6),
+                          const Text('XML',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700)),
+                        ],
+                      ),
+                    ),
                   ),
                 ]),
               ),
@@ -1100,7 +1207,8 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
                       fontWeight: FontWeight.w700))),
           const SizedBox(width: 12),
           Container(
-              width: 42, height: 42,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [scoreColor, scoreColor.withAlpha(153)]),
@@ -1142,7 +1250,8 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
             ]),
             const SizedBox(height: 2),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
                   color: scoreColor.withAlpha(38),
                   borderRadius: BorderRadius.circular(8)),
@@ -1158,7 +1267,8 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
           const SizedBox(height: 10),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
                 color: const Color(0xFFFF6584).withAlpha(26),
                 borderRadius: BorderRadius.circular(10),
@@ -1184,7 +1294,7 @@ class _QuizResultsViewScreenState extends State<QuizResultsViewScreen>
 }
 
 // ============================================================
-// QUIZ EDITOR SCREEN — with time per question + validation
+// QUIZ EDITOR SCREEN
 // ============================================================
 class QuizEditorScreen extends StatefulWidget {
   final Map<String, dynamic> quiz;
@@ -1203,7 +1313,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
   final _optionCController = TextEditingController();
   final _optionDController = TextEditingController();
   final _pointsController = TextEditingController();
-  final _timeController = TextEditingController(); // ✅ Time per question
+  final _timeController = TextEditingController();
   String _correctAnswer = 'A';
   List<Map<String, dynamic>> _questions = [];
   bool _isLoading = true;
@@ -1240,7 +1350,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
             'optionD': q['optD'] ?? '',
             'correct': q['correctOpt'] ?? 'A',
             'points': '${q['marks'] ?? 1}',
-            'timeSecs': '${q['timeSecs'] ?? 30}', // ✅ Time
+            'timeSecs': '${q['timeSecs'] ?? 30}',
           })
               .toList();
           _isLoading = false;
@@ -1270,7 +1380,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
         'points': _pointsController.text.trim().isEmpty
             ? '1'
             : _pointsController.text.trim(),
-        'timeSecs': _timeController.text.trim().isEmpty // ✅
+        'timeSecs': _timeController.text.trim().isEmpty
             ? '30'
             : _timeController.text.trim(),
       });
@@ -1285,10 +1395,9 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
     });
   }
 
-  // ✅ POINTS VALIDATION
   bool _validatePoints() {
     final totalMarks = int.tryParse(_marksController.text.trim()) ?? 0;
-    if (totalMarks == 0) return true; // skip validation if 0
+    if (totalMarks == 0) return true;
     final sumPoints = _questions.fold<int>(
         0, (sum, q) => sum + (int.tryParse(q['points'] ?? '1') ?? 1));
     if (sumPoints != totalMarks) {
@@ -1309,7 +1418,6 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
       _showSnack('Add at least one question!', const Color(0xFFFF6584));
       return;
     }
-    // ✅ Validate points
     if (!_validatePoints()) return;
     if (_isSaving) return;
     setState(() => _isSaving = true);
@@ -1323,7 +1431,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
       'optD': q['optionD'],
       'correctOpt': q['correct'],
       'marks': int.tryParse(q['points'] ?? '1') ?? 1,
-      'timeSecs': int.tryParse(q['timeSecs'] ?? '30') ?? 30, // ✅
+      'timeSecs': int.tryParse(q['timeSecs'] ?? '30') ?? 30,
     })
         .toList();
     final res = await QuizApi.updateQuiz(
@@ -1370,8 +1478,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
       return const Scaffold(
           backgroundColor: Color(0xFF0A0E1A),
           body: Center(
-              child:
-              CircularProgressIndicator(color: Color(0xFF6C63FF))));
+              child: CircularProgressIndicator(color: Color(0xFF6C63FF))));
     }
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
@@ -1413,7 +1520,8 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
         GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
-              width: 42, height: 42,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                   color: Colors.white.withAlpha(18),
                   borderRadius: BorderRadius.circular(12),
@@ -1450,7 +1558,6 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
         _glowTextField(_marksController, 'Total Marks', Icons.star_outline,
             keyboardType: TextInputType.number),
         const SizedBox(height: 8),
-        // ✅ Points hint
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
@@ -1465,9 +1572,8 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
             Expanded(
               child: Text(
                   'Sum of all question points must equal Total Marks',
-                  style: TextStyle(
-                      color: Colors.white.withAlpha(153),
-                      fontSize: 11)),
+                  style:
+                  TextStyle(color: Colors.white.withAlpha(153), fontSize: 11)),
             ),
           ]),
         ),
@@ -1503,7 +1609,6 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
         ]),
       ),
       const SizedBox(width: 10),
-      // ✅ Live points tracker
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
@@ -1547,86 +1652,80 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
                 blurRadius: 20,
                 offset: const Offset(0, 8))
           ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: _questionController,
-            maxLines: 3,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 15, height: 1.5),
-            decoration: InputDecoration(
-                hintText: 'Write your question here...',
-                hintStyle: TextStyle(
-                    color: Colors.white.withAlpha(64), fontSize: 15),
-                border: InputBorder.none),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        TextField(
+          controller: _questionController,
+          maxLines: 3,
+          style:
+          const TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
+          decoration: InputDecoration(
+              hintText: 'Write your question here...',
+              hintStyle:
+              TextStyle(color: Colors.white.withAlpha(64), fontSize: 15),
+              border: InputBorder.none),
+        ),
+        Divider(color: Colors.white.withAlpha(20)),
+        const SizedBox(height: 12),
+        _optionField('A', _optionAController, const Color(0xFF6C63FF)),
+        _optionField('B', _optionBController, const Color(0xFF00D4AA)),
+        _optionField('C', _optionCController, const Color(0xFFFFB347)),
+        _optionField('D', _optionDController, const Color(0xFFFF6584)),
+        const SizedBox(height: 16),
+        Text('CORRECT ANSWER',
+            style: TextStyle(
+                color: Colors.white.withAlpha(102),
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2)),
+        const SizedBox(height: 12),
+        Row(
+            children: ['A', 'B', 'C', 'D']
+                .map((opt) => _answerRadio(opt))
+                .toList()),
+        const SizedBox(height: 16),
+        Row(children: [
+          Expanded(
+            child: _glowTextField(_pointsController, 'Points', Icons.bolt,
+                keyboardType: TextInputType.number),
           ),
-          Divider(color: Colors.white.withAlpha(20)),
-          const SizedBox(height: 12),
-          _optionField('A', _optionAController, const Color(0xFF6C63FF)),
-          _optionField('B', _optionBController, const Color(0xFF00D4AA)),
-          _optionField('C', _optionCController, const Color(0xFFFFB347)),
-          _optionField('D', _optionDController, const Color(0xFFFF6584)),
-          const SizedBox(height: 16),
-          Text('CORRECT ANSWER',
-              style: TextStyle(
-                  color: Colors.white.withAlpha(102),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2)),
-          const SizedBox(height: 12),
-          Row(
-              children: ['A', 'B', 'C', 'D']
-                  .map((opt) => _answerRadio(opt))
-                  .toList()),
-          const SizedBox(height: 16),
-          // ✅ Points + Time in a row
-          Row(children: [
-            Expanded(
-              child: _glowTextField(
-                  _pointsController, 'Points', Icons.bolt,
-                  keyboardType: TextInputType.number),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _glowTextField(
-                  _timeController, 'Time (sec)', Icons.timer_outlined,
-                  keyboardType: TextInputType.number),
-            ),
-          ]),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: _addQuestion,
-            child: Container(
-              width: double.infinity,
-              height: 52,
-              decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                      colors: [Color(0xFFFFB347), Color(0xFF6C63FF)]),
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                        color: const Color(0xFFFFB347).withAlpha(89),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6))
-                  ]),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add_circle_outline,
-                      color: Colors.white, size: 20),
-                  SizedBox(width: 8),
-                  Text('Add Question',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700)),
-                ],
-              ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _glowTextField(
+                _timeController, 'Time (sec)', Icons.timer_outlined,
+                keyboardType: TextInputType.number),
+          ),
+        ]),
+        const SizedBox(height: 16),
+        GestureDetector(
+          onTap: _addQuestion,
+          child: Container(
+            width: double.infinity,
+            height: 52,
+            decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [Color(0xFFFFB347), Color(0xFF6C63FF)]),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                      color: const Color(0xFFFFB347).withAlpha(89),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6))
+                ]),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add_circle_outline, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text('Add Question',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700)),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ]),
     );
   }
 
@@ -1656,8 +1755,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
                 borderRadius: BorderRadius.circular(16)),
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),
-            child:
-            const Icon(Icons.delete, color: Color(0xFFFF6584)),
+            child: const Icon(Icons.delete, color: Color(0xFFFF6584)),
           ),
           child: Container(
             margin: const EdgeInsets.only(bottom: 10),
@@ -1701,8 +1799,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
                     Text(
                         'Ans: ${q['correct']}  •  ${q['points']} pts  •  ⏱ ${q['timeSecs']}s',
                         style: TextStyle(
-                            color: Colors.white.withAlpha(115),
-                            fontSize: 12)),
+                            color: Colors.white.withAlpha(115), fontSize: 12)),
                   ]),
                 ]),
           ),
@@ -1738,8 +1835,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
                   offset: const Offset(0, 6))
             ],
           ),
-          child:
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             if (_isSaving)
               const SizedBox(
                   width: 20,
@@ -1780,8 +1876,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
                 hintText: hint,
-                hintStyle:
-                TextStyle(color: Colors.white.withAlpha(77)),
+                hintStyle: TextStyle(color: Colors.white.withAlpha(77)),
                 border: InputBorder.none),
           ),
         ),
@@ -1801,7 +1896,8 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
             border: Border.all(color: color.withAlpha(77))),
         child: Row(children: [
           Container(
-            width: 26, height: 26,
+            width: 26,
+            height: 26,
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: color.withAlpha(77),
@@ -1849,7 +1945,7 @@ class _QuizEditorScreenState extends State<QuizEditorScreen>
 }
 
 // ============================================================
-// QUIZ CREATOR SCREEN — with time per question + validation
+// QUIZ CREATOR SCREEN
 // ============================================================
 class QuizCreatorScreen extends StatefulWidget {
   const QuizCreatorScreen({super.key});
@@ -1867,7 +1963,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
   final _optionCController = TextEditingController();
   final _optionDController = TextEditingController();
   final _pointsController = TextEditingController();
-  final _timeController = TextEditingController(); // ✅ Time
+  final _timeController = TextEditingController();
   String _correctAnswer = 'A';
   List<Map<String, dynamic>> _questions = [];
   bool _isSaving = false;
@@ -1901,7 +1997,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
         'points': _pointsController.text.trim().isEmpty
             ? '1'
             : _pointsController.text.trim(),
-        'timeSecs': _timeController.text.trim().isEmpty // ✅
+        'timeSecs': _timeController.text.trim().isEmpty
             ? '30'
             : _timeController.text.trim(),
       });
@@ -1916,7 +2012,6 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
     });
   }
 
-  // ✅ POINTS VALIDATION
   bool _validatePoints() {
     final totalMarks = int.tryParse(_marksController.text.trim()) ?? 0;
     if (totalMarks == 0) return true;
@@ -1940,7 +2035,6 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
       _showSnack('Add at least one question!', const Color(0xFFFF6584));
       return;
     }
-    // ✅ Validate points
     if (!_validatePoints()) return;
     if (_isSaving) return;
     setState(() => _isSaving = true);
@@ -1955,7 +2049,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
       'optD': q['optionD'],
       'correctOpt': q['correct'],
       'marks': int.tryParse(q['points'] ?? '1') ?? 1,
-      'timeSecs': int.tryParse(q['timeSecs'] ?? '30') ?? 30, // ✅
+      'timeSecs': int.tryParse(q['timeSecs'] ?? '30') ?? 30,
     })
         .toList();
 
@@ -2040,7 +2134,8 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
         GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
-              width: 42, height: 42,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                   color: Colors.white.withAlpha(18),
                   borderRadius: BorderRadius.circular(12),
@@ -2077,7 +2172,6 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
         _glowTextField(_marksController, 'Total Marks', Icons.star_outline,
             keyboardType: TextInputType.number),
         const SizedBox(height: 8),
-        // ✅ Points hint
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
@@ -2129,7 +2223,6 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
         ]),
       ),
       const SizedBox(width: 10),
-      // ✅ Live points tracker
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
@@ -2173,87 +2266,81 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
                 blurRadius: 20,
                 offset: const Offset(0, 8))
           ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: _questionController,
-            maxLines: 3,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 15, height: 1.5),
-            decoration: InputDecoration(
-                hintText: 'Write your question here...',
-                hintStyle: TextStyle(
-                    color: Colors.white.withAlpha(64), fontSize: 15),
-                border: InputBorder.none),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        TextField(
+          controller: _questionController,
+          maxLines: 3,
+          style:
+          const TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
+          decoration: InputDecoration(
+              hintText: 'Write your question here...',
+              hintStyle:
+              TextStyle(color: Colors.white.withAlpha(64), fontSize: 15),
+              border: InputBorder.none),
+        ),
+        Divider(color: Colors.white.withAlpha(20)),
+        const SizedBox(height: 12),
+        _optionField('A', _optionAController, const Color(0xFF6C63FF)),
+        _optionField('B', _optionBController, const Color(0xFF00D4AA)),
+        _optionField('C', _optionCController, const Color(0xFFFFB347)),
+        _optionField('D', _optionDController, const Color(0xFFFF6584)),
+        const SizedBox(height: 16),
+        Text('CORRECT ANSWER',
+            style: TextStyle(
+                color: Colors.white.withAlpha(102),
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2)),
+        const SizedBox(height: 12),
+        Row(
+            children: ['A', 'B', 'C', 'D']
+                .map((opt) => _answerRadio(opt))
+                .toList()),
+        const SizedBox(height: 16),
+        Row(children: [
+          Expanded(
+            child: _glowTextField(_pointsController, 'Points', Icons.bolt,
+                keyboardType: TextInputType.number),
           ),
-          Divider(color: Colors.white.withAlpha(20)),
-          const SizedBox(height: 12),
-          _optionField('A', _optionAController, const Color(0xFF6C63FF)),
-          _optionField('B', _optionBController, const Color(0xFF00D4AA)),
-          _optionField('C', _optionCController, const Color(0xFFFFB347)),
-          _optionField('D', _optionDController, const Color(0xFFFF6584)),
-          const SizedBox(height: 16),
-          Text('CORRECT ANSWER',
-              style: TextStyle(
-                  color: Colors.white.withAlpha(102),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2)),
-          const SizedBox(height: 12),
-          Row(
-              children: ['A', 'B', 'C', 'D']
-                  .map((opt) => _answerRadio(opt))
-                  .toList()),
-          const SizedBox(height: 16),
-          // ✅ Points + Time in a row
-          Row(children: [
-            Expanded(
-              child: _glowTextField(
-                  _pointsController, 'Points', Icons.bolt,
-                  keyboardType: TextInputType.number),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _glowTextField(
-                  _timeController, 'Time (sec)', Icons.timer_outlined,
-                  keyboardType: TextInputType.number),
-            ),
-          ]),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: _addQuestion,
-            child: Container(
-              width: double.infinity,
-              height: 52,
-              decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                      colors: [Color(0xFF6C63FF), Color(0xFF00D4FF)]),
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                        color: const Color(0xFF6C63FF).withAlpha(89),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6))
-                  ]),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add_circle_outline,
-                      color: Colors.white, size: 20),
-                  SizedBox(width: 8),
-                  Text('Add Question',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.3)),
-                ],
-              ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _glowTextField(
+                _timeController, 'Time (sec)', Icons.timer_outlined,
+                keyboardType: TextInputType.number),
+          ),
+        ]),
+        const SizedBox(height: 16),
+        GestureDetector(
+          onTap: _addQuestion,
+          child: Container(
+            width: double.infinity,
+            height: 52,
+            decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                    colors: [Color(0xFF6C63FF), Color(0xFF00D4FF)]),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                      color: const Color(0xFF6C63FF).withAlpha(89),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6))
+                ]),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add_circle_outline, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text('Add Question',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3)),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ]),
     );
   }
 
@@ -2283,8 +2370,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
                 borderRadius: BorderRadius.circular(16)),
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),
-            child:
-            const Icon(Icons.delete, color: Color(0xFFFF6584)),
+            child: const Icon(Icons.delete, color: Color(0xFFFF6584)),
           ),
           child: Container(
             margin: const EdgeInsets.only(bottom: 10),
@@ -2328,8 +2414,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
                     Text(
                         'Ans: ${q['correct']}  •  ${q['points']} pts  •  ⏱ ${q['timeSecs']}s',
                         style: TextStyle(
-                            color: Colors.white.withAlpha(115),
-                            fontSize: 12)),
+                            color: Colors.white.withAlpha(115), fontSize: 12)),
                   ]),
                 ]),
           ),
@@ -2365,8 +2450,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
                   offset: const Offset(0, 6))
             ],
           ),
-          child:
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             if (_isSaving)
               const SizedBox(
                   width: 20,
@@ -2408,8 +2492,7 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
                 hintText: hint,
-                hintStyle:
-                TextStyle(color: Colors.white.withAlpha(77)),
+                hintStyle: TextStyle(color: Colors.white.withAlpha(77)),
                 border: InputBorder.none),
           ),
         ),
@@ -2429,7 +2512,8 @@ class _QuizCreatorScreenState extends State<QuizCreatorScreen>
             border: Border.all(color: color.withAlpha(77))),
         child: Row(children: [
           Container(
-            width: 26, height: 26,
+            width: 26,
+            height: 26,
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: color.withAlpha(77),
